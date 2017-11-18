@@ -49,7 +49,7 @@ LEFT JOIN
 (
 SELECT S.player_id,
 SUM(ab) FILTER (WHERE R.year - 6 < S.start_year) AS six_ab,
-SUM(ab) FILTER (WHERE R.year - 6 >= S.Start_year) AS rest_ab,
+SUM(ab) FILTER (WHERE R.year - 6 >= S.start_year) AS rest_ab,
 SUM(ab) AS total_ab
 FROM start_years S, raw_batting R
 WHERE S.player_id = R.player_id
