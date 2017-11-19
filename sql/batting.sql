@@ -64,7 +64,8 @@ SELECT R.*
 INTO batting
 FROM raw_batting R, start_aug S
 WHERE R.player_id = S.player_id AND S.start_year >= 1970
-AND S.six_ab > 1 AND S.rest_ab > 1;
+AND S.six_ab > 1 AND S.rest_ab > 1
+AND R.player_id NOT IN (SELECT DISTINCT player_id FROM pitching);
 
 -- group records for first 6 years
 DROP TABLE IF EXISTS batting_six;
