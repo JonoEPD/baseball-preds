@@ -55,7 +55,7 @@ LEFT JOIN
 (
 SELECT S.player_id,
 SUM(g) FILTER (WHERE R.year - 6 < S.start_year) AS six_g,
-SUM(g) FILTER (WHERE R.year - 6 >= S.start_year) AS rest_g,
+SUM(g) FILTER (WHERE R.year - 6 >= S.start_year AND R.year - 10 < S.start_year) AS rest_g,
 SUM(g) AS total_g
 FROM start_pitch S, raw_pitching R
 WHERE S.player_id = R.player_id
@@ -87,7 +87,8 @@ DROP TABLE IF EXISTS pitching_rest;
 SELECT R.*
 INTO pitching_rest
 FROM pitching R, start_pitch S
-WHERE R.player_id = S.player_id AND R.year - 6 >= S.start_year;
+WHERE R.player_id = S.player_id AND R.year - 6 >= S.start_year
+AND R.year - 10 < S.start_year; -- only look at next 4 years
 
 DROP TABLE IF EXISTS pitching_agg;
 

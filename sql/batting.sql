@@ -49,8 +49,7 @@ LEFT JOIN
 (
 SELECT S.player_id,
 SUM(ab) FILTER (WHERE R.year - 6 < S.start_year) AS six_ab,
-SUM(ab) FILTER (WHERE R.year - 6 >= S.start_year) AS rest_ab,
-SUM(ab) AS total_ab
+SUM(ab) FILTER (WHERE R.year - 6 >= S.start_year AND R.year - 10 < S.start_year) AS rest_ab
 FROM start_years S, raw_batting R
 WHERE S.player_id = R.player_id
 GROUP BY S.player_id
@@ -65,7 +64,7 @@ SELECT R.*
 INTO batting
 FROM raw_batting R, start_aug S
 WHERE R.player_id = S.player_id AND S.start_year >= 1970
-AND S.years > 8 AND S.six_ab > 100 AND S.rest_ab > 100;
+AND S.six_ab > 1 AND S.rest_ab > 1;
 
 -- group records for first 6 years
 DROP TABLE IF EXISTS batting_six;
@@ -81,7 +80,8 @@ DROP TABLE IF EXISTS batting_rest;
 SELECT R.*
 INTO batting_rest
 FROM batting R, start_years S
-WHERE R.player_id = S.player_id AND R.year - 6 >= S.start_year;
+WHERE R.player_id = S.player_id AND R.year - 6 >= S.start_year
+AND R.year - 10 < S.start_year; -- only look at next 4 years
 
 DROP TABLE IF EXISTS batting_agg;
 
