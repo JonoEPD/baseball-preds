@@ -1,11 +1,10 @@
 -- SQL to compute league average metrics for each year
--- collated from ALL data, not just the players in our set
 
 
 -- batting year base aggregates
 DROP TABLE IF EXISTS batting_yba;
 
-SELECT year,
+SELECT --year,
 SUM(g) AS g,
 SUM(ab) AS ab,
 SUM(r) AS r,
@@ -26,16 +25,16 @@ SUM(g_idp) AS g_idp,
 SUM(h + bb + ibb + hbp) AS ob, -- times on base
 SUM(ab + bb + ibb + hbp + sh + sf) AS pa, -- plate appearances
 SUM(h + double + triple*2 + hr*3) AS tb, -- total bases
-COUNT(DISTINCT player_id) AS c -- unique players
+COUNT(DISTINCT ARRAY[player_id, year::text]) AS c -- unique player/years
 INTO batting_yba
 FROM batting_six
-GROUP BY year
+--GROUP BY year
 ;
 
 -- batting year averages
 DROP TABLE IF EXISTS batting_yavg;
 
-SELECT year,
+SELECT --year,
 g / c AS g,
 ab / c AS ab,
 r / c AS r,
@@ -70,7 +69,7 @@ bb / pa AS bb_per_pa,
 so / ab AS so_per_ab,
 tb / ab AS slg,
 (h + bb + hbp) / (ab + bb + sf + hbp) AS obp,
-tb * (h+bb) / (ab + bb) AS rc,
+tb * (h+bb) / (ab + bb) / c AS rc,
 tb * (h+bb) / (ab + bb)^2 AS rc_per_ab,
 (h - hr) / (ab - so - hr + sf) AS babip,
 (tb - h) / ab AS iso,
@@ -80,4 +79,4 @@ FROM batting_yba
 
 ;
 
-\copy batting_yavg TO '~/baseball-preds/batting_yearly_averages.csv' WITH CSV HEADER DELIMITER ','
+\copy batting_yavg TO '~/baseball-preds/batting_means.csv' WITH CSV HEADER DELIMITER ',';
