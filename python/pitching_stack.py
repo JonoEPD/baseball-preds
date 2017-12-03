@@ -3,6 +3,9 @@ import csv
 
 # import batting features and assign to dict
 pitching_dict = {}
+volume_features = 21
+ratio_features = 18
+total_features = volume_features + ratio_features
 headers = [] # cache list of headers
 with open('pitching.csv') as f:
     pitching = csv.reader(f, delimiter=',')
@@ -40,8 +43,8 @@ for player in player_list:
             start_year = pitching_dict[start_id][0]
             year = start_year + int(year)
             features.append(year)
-            features.extend([0] * 20) # append 0s for 20 aggregate features
-            features.extend([-1] * 18) # append -1s for 19 ratio features
+            features.extend([0] * volume_features) # append 0s for 20 aggregate features
+            features.extend([-1] * ratio_features) # append -1s for 19 ratio features
         x.extend(features)
     pitching_features[player] = x
 
@@ -52,11 +55,11 @@ i_count = 0
 for player, features in pitching_features.items():
     x = []
     for ynum in range(6):
-        offset = 39*ynum # get starting index for a year's worth of data
+        offset = (total_features+1)*ynum # get starting index for a year's worth of data
         year = features[offset]
         x.append(year)
         #norms = pitching_norms[str(int(year))]
-        for i in range(38):
+        for i in range(total_features):
             idx = i + offset + 1
             val = features[idx]
             norm = pitching_norms[i]

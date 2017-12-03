@@ -55,6 +55,7 @@ g_idp / c AS g_idp,
 ob / c AS ob,
 pa / c AS pa,
 tb / c AS tb,
+0 AS war, -- for now just set average war = 0
 ab / g AS ab_per_g,
 r / ab AS r_per_ab,
 h / ab AS batting_avg,

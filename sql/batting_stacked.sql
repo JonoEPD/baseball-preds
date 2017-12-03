@@ -29,6 +29,15 @@ INTO batting_sy
 FROM batting_six
 GROUP BY player_id, year;
 
+-- join WAR data
+DROP TABLE IF EXISTS batting_sw;
+SELECT R.*, COALESCE(W.war, 0) AS war
+INTO batting_sw
+FROM batting_sy R
+LEFT JOIN batting_war W
+ON R.player_id = W.player_id AND R.year = W.year;
+
+
 -- "safe" numeric div function -- outputs -1 to flag "divide by 0". optional arg 'p' is 'precision'
 
 CREATE OR REPLACE FUNCTION safe_div(num numeric, denom numeric, p integer default 8) RETURNS numeric AS $$
@@ -59,7 +68,7 @@ safe_div((h - hr),(ab - so - hr + sf)) AS babip,
 safe_div((tb - h),ab) AS iso,
 safe_div((ab + bb),so) AS pa_per_so
 INTO batting_sf
-FROM batting_sy
+FROM batting_sw
 ;
 
 \copy batting_sf TO 'batting.csv' WITH CSV HEADER DELIMITER ',';

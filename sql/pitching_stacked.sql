@@ -28,6 +28,14 @@ INTO pitching_sy
 FROM pitching_six
 GROUP BY player_id, year;
 
+-- join WAR data
+DROP TABLE IF EXISTS pitching_sw;
+SELECT R.*, COALESCE(W.war, 0) AS war
+INTO pitching_sw
+FROM pitching_sy R
+LEFT JOIN pitching_war W
+ON R.player_id = W.player_id AND R.year = W.year;
+
 -- select into feature table
 
 DROP TABLE IF EXISTS pitching_sf;
@@ -52,6 +60,6 @@ safe_div(so,tbf) AS so_per_tbf,
 safe_div(wp,bfp) AS wp_per_bfp,
 safe_div(so,bb) AS so_per_bb
 INTO pitching_sf
-FROM pitching_sy;
+FROM pitching_sw;
 
 \copy pitching_sf TO '~/baseball-preds/pitching.csv' WITH CSV HEADER DELIMITER ',';

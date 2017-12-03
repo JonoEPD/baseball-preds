@@ -49,6 +49,7 @@ bfp / c AS bfp,
 gf / c AS gf,
 r / c AS r,
 tbf / c AS tbf,
+0 AS war, -- for now just set average war = 0
 safe_div(er * 9,(ipouts / 3)) AS era,
 safe_div(h,tbf) AS baopp,
 -- per game stats
