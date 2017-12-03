@@ -2,7 +2,6 @@ library(readr)
 library(tidyverse)
 
 batting <- read_csv('batting.csv')
-pitching <- read_csv('pitching.csv')
 
 pl <- player_list(batting, 2009)
 

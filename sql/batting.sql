@@ -70,7 +70,7 @@ AND R.player_id NOT IN (SELECT DISTINCT player_id FROM pitching);
 -- group records for first 6 years
 DROP TABLE IF EXISTS batting_six;
 
-SELECT R.*
+SELECT R.*, R.year - S.start_year AS year_num, 
 INTO batting_six
 FROM batting R, start_aug S
 WHERE R.player_id = S.player_id AND R.year - 6 < S.start_year;
