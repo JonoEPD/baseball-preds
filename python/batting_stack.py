@@ -17,7 +17,7 @@ with open('batting.csv') as f:
         batting_dict[player_id + '_' + year_num] = list(map(float,row[2:]))
 
 # get list of all unique players in dict
-player_list = list(set(list(map(lambda x: x[:-2], batting_dict.keys()))))
+batter_list = list(set(list(map(lambda x: x[:-2], batting_dict.keys()))))
 
 # import yearly means for batting features and assign to dict
 with open('batting_means.csv') as f:
@@ -30,7 +30,7 @@ with open('batting_means.csv') as f:
 # build up stacked feature vector for each player
 batting_features = {}
 years = list(map(str,[0,1,2,3,4,5]))
-for player in player_list:
+for player in batter_list:
     x = []
     for year in years:
         features = []

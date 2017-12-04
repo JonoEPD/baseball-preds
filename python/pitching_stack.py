@@ -17,7 +17,7 @@ with open('pitching.csv') as f:
         pitching_dict[player_id + '_' + str(year_num)] = list(map(float,row[2:]))
 
 # get list of all unique players in dict
-player_list = list(set(list(map(lambda x: x[:-2], pitching_dict.keys()))))
+pitcher_list = list(set(list(map(lambda x: x[:-2], pitching_dict.keys()))))
 
 # import yearly means for pitching features and assign to dict
 with open('pitching_means.csv') as f:
@@ -30,7 +30,7 @@ with open('pitching_means.csv') as f:
 # build up stacked feature vector for each player
 pitching_features = {}
 years = list(map(str,[0,1,2,3,4,5]))
-for player in player_list:
+for player in pitcher_list:
     x = []
     for year in years:
         features = []
