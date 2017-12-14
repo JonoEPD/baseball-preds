@@ -37,9 +37,8 @@ ctm <- rbind(btm,ptm)
 ggplot(ctm, aes(x=Year,y=R2, group=Method, color=Method)) +
   geom_point() + geom_line(linetype=2) +
   facet_wrap(~type) +
-  labs(title="Year vs. R2 Score by Player Type and Method") +
-  theme(plot.title = element_text(hjust = 0.5),
-        text = element_text(size=14))
+  theme_bw(base_size = 6) +
+  theme(legend.position = 'bottom')
 
 # player-by-player analysis
 bat <- read_delim("~/baseball-preds/results/batting_pbp_results.csv", 
@@ -57,10 +56,6 @@ bat4 <- cbind(pred=bat$preds0, y=bat$'4',delta_pred=bcd$'predwar10',year=rep(10,
 bat5 <- cbind(pred=bat$preds0, y=bat$'5',delta_pred=bcd$'predwar11',year=rep(11,bat_len))
 bm = data.frame(rbind(bat1,bat2,bat3,bat4,bat5))
 
-ggplot(bm, aes(x=pred, y=y, group=year)) + 
-  geom_point() +
-  geom_abline(intercept=0, slope=1, col='red')
-
 pitch <- pitch[order(pitch$player_id),]
 pitch_len <- dim(pitch)[1]
 pcd <- read_csv("comparison/pitching_pbp_delta0.csv") # add in deltas
@@ -71,7 +66,7 @@ pitch4 <- cbind(pred=pitch$pred0, y=pitch$'4',delta_pred=pcd$'predwar10',year=re
 pitch5 <- cbind(pred=pitch$pred0, y=pitch$'5',delta_pred=pcd$'predwar11',year=rep(11,pitch_len))
 pm = data.frame(rbind(pitch1,pitch2,pitch3,pitch4,pitch5))
 
-ggplot(pm, aes(x=pred, y=y, color=factor(year))) + 
+ggplot(pm, aes(x=pred, y=y)) + 
   geom_point() +
   geom_abline(intercept=0, slope=1, col='red')
 
@@ -122,3 +117,78 @@ ggplot(cmm, aes(x=round(y), y=Residual, group=interaction(round(y),Method), fill
         legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"),
         text = element_text(size=14))
 
+# scatterplots
+
+bms <- melt(bm,id=c('y','year'),measure=c('pred','delta_pred'), variable.name = "Method", value.name = "Prediction")
+pms <- melt(pm,id=c('y','year'),measure=c('pred','delta_pred'), variable.name = "Method", value.name = "Prediction")
+
+bms$Method <- gsub('delta_pred','Delta Method',bms$Method)
+bms$Method <- gsub('pred','Neural Net',bms$Method)
+pms$Method <- gsub('delta_pred','Delta Method',pms$Method)
+pms$Method <- gsub('pred','Neural Net',pms$Method)
+
+
+ggplot(bms, aes(x=y, y=Prediction)) + 
+  geom_point() +
+  geom_abline(intercept=0, slope=1, col='red') +
+  facet_wrap(~Method) +
+  labs(title="Batting Predictions", 
+       x = "Actual WAR",
+       y = "Prediction") +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"),
+        text = element_text(size=14))
+
+ggplot(pms, aes(x=y, y=Prediction)) + 
+  geom_point() +
+  geom_abline(intercept=0, slope=1, col='red') +
+  facet_wrap(~Method) +
+  labs(title="Pitching Predictions", 
+       x = "Actual WAR",
+       y = "Prediction") +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"),
+        text = element_text(size=14))
+
+#hexbin plots
+ggplot(bms, aes(x=y, y=Prediction)) +
+  geom_hex(aes(fill=log(..count..))) + 
+  geom_abline(intercept=0, slope=1, col='red') +
+  facet_wrap(~Method) +
+  labs(title="Batting Predictions", 
+       x = "Actual WAR",
+       y = "Prediction") +
+  theme_bw(base_size = 6) +
+  labs(fill="log(examples)") +
+  theme(legend.position = 'bottom') +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"))
+
+ggplot(pms, aes(x=y, y=Prediction)) +
+  geom_hex(aes(fill=log(..count..))) + 
+  geom_abline(intercept=0, slope=1, col='red') +
+  facet_wrap(~Method) +
+  labs(title="Pitching Predictions", 
+       x = "Actual WAR",
+       y = "Prediction") +
+  theme_bw(base_size = 6) +
+  labs(fill="log(examples)") +
+  theme(legend.position = 'bottom') +
+  theme(plot.title = element_text(hjust = 0.5),
+  legend.background = element_rect(fill="gray90", size=.5, linetype="dotted")) 
+
+bms$type = 'Batter'
+pms$type = 'Pitcher'
+cms = rbind(bms,pms)
+
+ggplot(cms, aes(x=y, y=Prediction)) +
+  geom_hex(aes(fill=log(..count..))) +
+  geom_abline(intercept=0, slope=1, col='red') +
+  facet_wrap(~type+Method) +
+  labs(x = "Actual WAR",
+    y = "Prediction") +
+  theme_bw(base_size=8) +
+  labs(fill="log(examples)") +
+  theme(legend.position = 'bottom') +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"))
